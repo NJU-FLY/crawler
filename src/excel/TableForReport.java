@@ -82,6 +82,14 @@ public class TableForReport {
         rwb.close();
     }
 
+    /**
+     * 这个年均引用是用来生成年均引用数据列的，因为图书的年均引用长期来看是肯定下降的，所以已经不再需要这个数据了
+     *
+     * @param path
+     * @throws IOException
+     * @throws BiffException
+     * @throws WriteException
+     */
     public void 计算年均引用(String path) throws IOException, BiffException, WriteException {
         Sheet sheet = this.readSheet(path, 0);
         Integer rows = sheet.getRows();
@@ -125,6 +133,14 @@ public class TableForReport {
         this.closeSheet(wwb);
     }
 
+    /**
+     * 计算首次被引时间列，2016最终数据表的AO列
+     *
+     * @param path
+     * @throws IOException
+     * @throws WriteException
+     * @throws BiffException
+     */
     public void 计算首次被引时间(String path) throws IOException, WriteException, BiffException {
         Sheet sheet = this.readSheet(path, 0);
         Integer rows = sheet.getRows();
@@ -165,6 +181,14 @@ public class TableForReport {
         this.closeSheet(wwb);
     }
 
+    /**
+     * 计算峰值间隔列，2016最终数据表的AN列
+     *
+     * @param path
+     * @throws IOException
+     * @throws BiffException
+     * @throws WriteException
+     */
     public void 计算峰值间隔(String path) throws IOException, BiffException, WriteException {
         Sheet sheet = this.readSheet(path, 0);
         Integer rows = sheet.getRows();
@@ -216,10 +240,18 @@ public class TableForReport {
         this.closeSheet(wwb);
     }
 
-    public void 计算各种评论数(String inputPath, String outputPath) throws Exception {
+    /**
+     * 统计开头的函数，是用于生成统计表格的，这个是2016报告里的表9
+     * 需要注意的是立项时间的截止时间是写死的，需要处理
+     *
+     * @param inputPath
+     * @param outputPath
+     * @throws Exception
+     */
+    public void 统计各种评论数(String inputPath, String outputPath) throws Exception {
         Sheet sheet = this.readSheet(inputPath, 0);
         Integer rows = sheet.getRows();
-        String[] years = new String[rows - 1];
+        String[] projectTime = new String[rows - 1];
         String[] doubanCount = new String[rows - 1];
         String[] doubanScore = new String[rows - 1];
         String[] dangdangCount = new String[rows - 1];
@@ -229,7 +261,7 @@ public class TableForReport {
         String[] newspaperCount = new String[rows - 1];
 
         for (int i = 1; i < rows; i++) {
-            years[i - 1] = sheet.getCell(CellName.pubTime.getValue(), i).getContents();
+            projectTime[i - 1] = sheet.getCell(CellName.projectTime.getValue(), i).getContents();
             doubanCount[i - 1] = sheet.getCell(CellName.doubanCommentCount.getValue(), i).getContents();
             doubanScore[i - 1] = sheet.getCell(CellName.doubanScore.getValue(), i).getContents();
             dangdangCount[i - 1] = sheet.getCell(CellName.dangdangCommentCount.getValue(), i).getContents();
@@ -244,10 +276,12 @@ public class TableForReport {
         ws.addCell(new Label(1, 0, "豆瓣评价数"));
         ws.addCell(new Label(2, 0, "豆瓣得分"));
         ws.addCell(new Label(3, 0, "当当评价数"));
-        ws.addCell(new Label(4, 0, "亚马逊评价数"));
-        ws.addCell(new Label(5, 0, "亚马逊得分"));
-        ws.addCell(new Label(6, 0, "报纸评论数"));
-        ws.addCell(new Label(7, 0, "学术评论数"));
+        ws.addCell(new Label(4, 0, "当当得分"));
+        ws.addCell(new Label(5, 0, "亚马逊评价数"));
+        ws.addCell(new Label(6, 0, "亚马逊得分"));
+        ws.addCell(new Label(7, 0, "报纸评论数"));
+        ws.addCell(new Label(8, 0, "学术评论数"));
+
         this.closeSheet(wwb);
 
         Integer doubanHasComment = 0;
@@ -255,8 +289,18 @@ public class TableForReport {
         Integer amazonHasComment = 0;
         Integer scholarHasComment = 0;
         Integer newspaperHasComment = 0;
+        Double doubanAllYearCount = 0.0;
+        Double doubanAllYearScore = 0.0;
+        Double dangdangAllYearCount = 0.0;
+        Double amazonAllYearCount = 0.0;
+        Double amazonAllYearScore = 0.0;
+        Double scholarAllYearCount = 0.0;
+        Double newspaperAllYearCount = 0.0;
 
-        for (int i = 2006; i <= 2015; i++) {
+        //这是立项时间的起止，这里2004应该是不变的了，截止时间现在是写死的
+        int start = 2004;
+        int end = 2014;
+        for (int i = start; i <= end; i++) {
             Double doubanTotalCount = 0.0;
             Double doubanTotalScore = 0.0;
             Double dangdangTotalCount = 0.0;
@@ -270,71 +314,213 @@ public class TableForReport {
             Integer scholarHasCommentYear = 0;
             Integer newspaperHasCommentYear = 0;
             for (int j = 0; j < rows - 1; j++) {
-                if(Integer.parseInt(years[j]) == i){
-                    if(!doubanCount[j].equals("--")){
+                if (Integer.parseInt(projectTime[j]) == i) {
+                    if (!doubanCount[j].equals("--")) {
                         doubanTotalCount += Double.parseDouble(doubanCount[j]);
                         doubanHasCommentYear++;
                     }
-                    if(!doubanScore[j].equals("--")){
+                    if (!doubanScore[j].equals("--")) {
                         doubanTotalScore += Double.parseDouble(doubanScore[j]);
                     }
-                    if(!dangdangCount[j].equals("--")){
+                    if (!dangdangCount[j].equals("--")) {
                         dangdangTotalCount += Double.parseDouble(dangdangCount[j]);
                         dangdangHasCommentYear++;
                     }
-                    if(!amazonCount[j].equals("--")){
+                    if (!amazonCount[j].equals("--")) {
                         amazonTotalCount += Double.parseDouble(amazonCount[j]);
                         amazonHasCommentYear++;
                     }
-                    if(!amazonScore[j].equals("--")){
+                    if (!amazonScore[j].equals("--")) {
                         amazonTotalScore += Double.parseDouble(amazonScore[j]);
                     }
-                    if(!scholarCount[j].equals("0")){
+                    if (!scholarCount[j].equals("0")) {
                         scholarTotalCount += Double.parseDouble(scholarCount[j]);
                         scholarHasCommentYear++;
                     }
-                    if(!newspaperCount[j].equals("0")){
+                    if (!newspaperCount[j].equals("0")) {
                         newspaperTotalCount += Double.parseDouble(newspaperCount[j]);
                         newspaperHasCommentYear++;
                     }
                 }
             }
-            Double doubanAverageCount = doubanTotalCount/doubanHasCommentYear;
-            Double doubanAverageScore = doubanTotalScore/doubanHasCommentYear;
-            Double dangdangAverageCount = dangdangTotalCount/dangdangHasCommentYear;
-            Double amazonAverageCount = amazonTotalCount/amazonHasCommentYear;
-            Double amazonAverageScore = amazonTotalScore/amazonHasCommentYear;
-            Double scholarAverageCount = scholarTotalCount/scholarHasCommentYear;
-            Double newspaperAverageCount = newspaperTotalCount/newspaperHasCommentYear;
+
+            Double doubanAverageCount = doubanTotalCount / doubanHasCommentYear;
+            Double doubanAverageScore = doubanTotalScore / doubanHasCommentYear;
+            Double dangdangAverageCount = dangdangTotalCount / dangdangHasCommentYear;
+            Double amazonAverageCount = amazonTotalCount / amazonHasCommentYear;
+            Double amazonAverageScore = amazonTotalScore / amazonHasCommentYear;
+            Double scholarAverageCount = scholarTotalCount / scholarHasCommentYear;
+            Double newspaperAverageCount;
+            if (newspaperHasCommentYear == 0.0) {
+                newspaperAverageCount = 0.0;
+            } else {
+                newspaperAverageCount = newspaperTotalCount / newspaperHasCommentYear;
+            }
             doubanHasComment += doubanHasCommentYear;
             dangdangHasComment += dangdangHasCommentYear;
             amazonHasComment += amazonHasCommentYear;
             scholarHasComment += scholarHasCommentYear;
             newspaperHasComment += newspaperHasCommentYear;
 
+            doubanAllYearCount += doubanTotalCount;
+            doubanAllYearScore += doubanTotalScore;
+            dangdangAllYearCount += dangdangTotalCount;
+            amazonAllYearCount += amazonTotalCount;
+            amazonAllYearScore += amazonTotalScore;
+            scholarAllYearCount += scholarTotalCount;
+            newspaperAllYearCount += newspaperTotalCount;
+
             wwb = this.writeSheet(outputPath);
             ws = wwb.getSheet(0);
-            ws.addCell(new Number(0, i-2006+1, i));
-            ws.addCell(new Number(1, i-2006+1, doubanAverageCount));
-            ws.addCell(new Number(2, i-2006+1, doubanAverageScore));
-            ws.addCell(new Number(3, i-2006+1, dangdangAverageCount));
-            ws.addCell(new Number(4, i-2006+1, amazonAverageCount));
-            ws.addCell(new Number(5, i-2006+1, amazonAverageScore));
-            ws.addCell(new Number(6, i-2006+1, scholarAverageCount));
-            ws.addCell(new Number(7, i-2006+1, newspaperAverageCount));
+            ws.addCell(new Number(0, i - start + 1, i));
+            ws.addCell(new Number(1, i - start + 1, doubanAverageCount));
+            ws.addCell(new Number(2, i - start + 1, doubanAverageScore));
+            ws.addCell(new Number(3, i - start + 1, dangdangAverageCount));
+            ws.addCell(new Number(4, i - start + 1, 5));
+            ws.addCell(new Number(5, i - start + 1, amazonAverageCount));
+            ws.addCell(new Number(6, i - start + 1, amazonAverageScore));
+            ws.addCell(new Number(7, i - start + 1, scholarAverageCount));
+            ws.addCell(new Number(8, i - start + 1, newspaperAverageCount));
             this.closeSheet(wwb);
         }
 
         wwb = this.writeSheet(outputPath);
         ws = wwb.getSheet(0);
-        ws.addCell(new Number(1, 11, doubanHasComment));
-        ws.addCell(new Number(2, 11, doubanHasComment));
-        ws.addCell(new Number(3, 11, dangdangHasComment));
-        ws.addCell(new Number(4, 11, amazonHasComment));
-        ws.addCell(new Number(5, 11, amazonHasComment));
-        ws.addCell(new Number(6, 11, scholarHasComment));
-        ws.addCell(new Number(7, 11, newspaperHasComment));
+        ws.addCell(new Label(0, end - start + 2, "总评论数"));
+        ws.addCell(new Number(1, end - start + 2, doubanAllYearCount));
+        ws.addCell(new Number(3, end - start + 2, dangdangAllYearCount));
+        ws.addCell(new Number(5, end - start + 2, amazonAllYearCount));
+        ws.addCell(new Number(7, end - start + 2, scholarAllYearCount));
+        ws.addCell(new Number(8, end - start + 2, newspaperAllYearCount));
+
+        ws.addCell(new Label(0, end - start + 3, "有评论图书个数"));
+        ws.addCell(new Number(2, end - start + 3, doubanHasComment));
+        ws.addCell(new Number(4, end - start + 3, dangdangHasComment));
+        ws.addCell(new Number(6, end - start + 3, amazonHasComment));
+        ws.addCell(new Number(7, end - start + 3, scholarHasComment));
+        ws.addCell(new Number(8, end - start + 3, newspaperHasComment));
+
+        ws.addCell(new Label(0, end - start + 4, "平均值"));
+        ws.addCell(new Number(1, end - start + 4, doubanAllYearCount / doubanHasComment));
+        ws.addCell(new Number(2, end - start + 4, doubanAllYearScore / doubanHasComment));
+        ws.addCell(new Number(3, end - start + 4, dangdangAllYearCount / dangdangHasComment));
+        ws.addCell(new Number(4, end - start + 4, 5));
+        ws.addCell(new Number(5, end - start + 4, amazonAllYearCount / amazonHasComment));
+        ws.addCell(new Number(6, end - start + 4, amazonAllYearScore / amazonHasComment));
+        ws.addCell(new Number(7, end - start + 4, scholarAllYearCount / scholarHasComment));
+        ws.addCell(new Number(8, end - start + 4, newspaperAllYearCount / newspaperHasComment));
+
         this.closeSheet(wwb);
+    }
+
+
+    public void 统计各种被引情况(String inputPath, String outputPath) throws IOException, BiffException, WriteException {
+        Sheet sheet = this.readSheet(inputPath, 0);
+        Integer rows = sheet.getRows();
+        String[] projectTime = new String[rows - 1];
+        String[] magazines = new String[rows - 1];
+        String[] masters = new String[rows - 1];
+        String[] doctors = new String[rows - 1];
+        String[] conferences = new String[rows - 1];
+        String[] selfCitations = new String[rows - 1];
+        String[] selfInstituteCitations = new String[rows - 1];
+
+        for (int i = 1; i < rows; i++) {
+            projectTime[i - 1] = sheet.getCell(CellName.projectTime.getValue(), i).getContents();
+            magazines[i - 1] = sheet.getCell(CellName.magazine.getValue(), i).getContents();
+            masters[i - 1] = sheet.getCell(CellName.master.getValue(), i).getContents();
+            doctors[i - 1] = sheet.getCell(CellName.doctor.getValue(), i).getContents();
+            conferences[i - 1] = sheet.getCell(CellName.conference.getValue(), i).getContents();
+            selfCitations[i - 1] = sheet.getCell(CellName.authorSelf.getValue(), i).getContents();
+            selfInstituteCitations[i - 1] = sheet.getCell(CellName.instituteSelf.getValue(), i).getContents();
+        }
+
+        WritableWorkbook wwb = this.writeSheet(outputPath);
+        WritableSheet ws = wwb.getSheet(0);
+        ws.addCell(new Label(0, 0, "立项时间"));
+        ws.addCell(new Label(1, 0, "总被引"));
+        ws.addCell(new Label(2, 0, "学位论文"));
+        ws.addCell(new Label(3, 0, "期刊论文"));
+        ws.addCell(new Label(4, 0, "会议论文"));
+        ws.addCell(new Label(5, 0, "自引率"));
+        ws.addCell(new Label(6, 0, "机构自引率"));
+        this.closeSheet(wwb);
+
+
+        //这是立项时间的起止，这里2004应该是不变的了，截止时间现在是写死的
+        int start = 2004;
+        int end = 2014;
+
+        Double degreeAllTotal = 0.0;
+        Double magazineAllTotal = 0.0;
+        Double conferenceAllTotal = 0.0;
+        Double selfCitAllTotal = 0.0;
+        Double selfInstituteAllTotal = 0.0;
+        Double allTotal = 0.0;
+        for (int i = start; i <= end; i++) {
+            Double degreeYearTotal = 0.0;
+            Double magazineYearTotal = 0.0;
+            Double conferenceYearTotal = 0.0;
+            Double selfCitYearTotal = 0.0;
+            Double selfInstituteYearTotal = 0.0;
+            Double yearTotal = 0.0;
+            for (int j = 0; j < rows - 1; j++) {
+                if(magazines[j].equals("")){
+                    continue;
+                }
+                if (Integer.parseInt(projectTime[j]) == i) {
+                    if (!magazines[j].equals("--") && magazines[j] != null) {
+                        magazineYearTotal += Double.parseDouble(magazines[j]);
+                    }
+                    if (!conferences[j].equals("--") && conferences[j] != null) {
+                        conferenceYearTotal += Double.parseDouble(conferences[j]);
+                    }
+                    if (!doctors[j].equals("--") && doctors[j] != null) {
+                        degreeYearTotal += Double.parseDouble(doctors[j]);
+                    }
+                    if (!masters[j].equals("--") && masters[j] != null) {
+                        degreeYearTotal += Double.parseDouble(masters[j]);
+                    }
+                    if (!selfCitations[j].equals("--") && selfCitations[j] != null) {
+                        selfCitYearTotal += Double.parseDouble(selfCitations[j]);
+                    }
+                    if (!selfInstituteCitations[j].equals("--") && selfInstituteCitations[j] != null) {
+                        selfInstituteYearTotal += Double.parseDouble(selfInstituteCitations[j]);
+                    }
+                }
+            }
+            yearTotal = degreeYearTotal + conferenceYearTotal + magazineYearTotal;
+
+            allTotal += yearTotal;
+            degreeAllTotal += degreeYearTotal;
+            conferenceAllTotal += conferenceYearTotal;
+            magazineAllTotal += magazineYearTotal;
+            selfCitAllTotal += selfCitYearTotal;
+            selfInstituteAllTotal += selfInstituteYearTotal;
+
+            wwb = this.writeSheet(outputPath);
+            ws = wwb.getSheet(0);
+            ws.addCell(new Number(0, i - start + 1, i));
+            ws.addCell(new Number(1, i - start + 1, yearTotal));
+            ws.addCell(new Number(2, i - start + 1, degreeYearTotal));
+            ws.addCell(new Number(3, i - start + 1, magazineYearTotal));
+            ws.addCell(new Number(4, i - start + 1, conferenceYearTotal));
+            ws.addCell(new Number(5, i - start + 1, selfCitYearTotal / yearTotal));
+            ws.addCell(new Number(6, i - start + 1, selfInstituteYearTotal / yearTotal));
+            this.closeSheet(wwb);
+        }
+
+        wwb = this.writeSheet(outputPath);
+        ws = wwb.getSheet(0);
+        ws.addCell(new Label(0, end - start + 2, "总计"));
+        ws.addCell(new Number(1, end - start + 2, allTotal));
+        ws.addCell(new Number(2, end - start + 2, degreeAllTotal));
+        ws.addCell(new Number(3, end - start + 2, magazineAllTotal));
+        ws.addCell(new Number(4, end - start + 2, conferenceAllTotal));
+        ws.addCell(new Number(5, end - start + 2, selfCitAllTotal / allTotal));
+        ws.addCell(new Number(6, end - start + 2, selfInstituteAllTotal / allTotal));
+        this.closeSheet(wwb);
+
     }
 
     /**
@@ -383,6 +569,7 @@ public class TableForReport {
 //        report.计算首次被引时间("resources/result.xls");
 //        report.计算年均引用("resources/result.xls");
 //      其他几个表格数据计算可以明年再补充了
-        report.计算各种评论数("resources/result.xls","resources/result1.xls");
+//        report.统计各种评论数("resources/result.xls", "resources/process.xls");
+        report.统计各种被引情况("resources/result.xls", "resources/process.xls");
     }
 }

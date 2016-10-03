@@ -29,15 +29,16 @@ public enum CellName {
     conference(20),
     authorSelf(21),
     instituteSelf(22),
-
+    projectTime(23),
     doubanCommentCount(24),
     doubanScore(25),
     dangdangCommentCount(26),
     dangdangScore(27),
     amazonCommentCount(28),
     amazonScore(29),
-    scholarCommentCount(30),
-    newspaperCommentCount(31),
+    newspaperCommentCount(30),
+    scholarCommentCount(31),
+
 
     年均引用(37),
     首次被引时间(39),
