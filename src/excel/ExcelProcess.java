@@ -272,7 +272,7 @@ public class ExcelProcess {
     }
 
     /**
-     * cnki学术评论、报纸评论写入
+     * cnki学术评论、报纸评论数写入
      *
      * @param result
      * @throws Exception
@@ -290,6 +290,33 @@ public class ExcelProcess {
         Integer count = Integer.parseInt(result);
         Number num = new Number(col, row, count);
         ws.addCell(num);
+        wwb.write();
+        wwb.close();
+        rwb.close();
+    }
+
+    public void writeCnkiComment(String[][] details) throws Exception {
+        if(details == null){
+            return;
+        }
+
+        InputStream instream = new FileInputStream("resources/result.xls");
+        Workbook rwb = Workbook.getWorkbook(instream);
+        WritableWorkbook wwb = Workbook.createWorkbook(new File("resources/result.xls"), rwb);//copy
+        WritableSheet ws = wwb.getSheet(0);
+        int row = ws.getRows();
+        for (int i = 0; i < details.length; i++) {
+            String[] detail = details[i];
+            Label title = new Label(0, row+i, detail[0]);
+            Label author = new Label(1, row+i, detail[1]);
+            Label institute = new Label(2, row+i, detail[2]);
+            Label time = new Label(3, row+i, detail[3]);
+            ws.addCell(title);
+            ws.addCell(institute);
+            ws.addCell(author);
+            ws.addCell(time);
+        }
+
         wwb.write();
         wwb.close();
         rwb.close();

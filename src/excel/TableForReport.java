@@ -548,7 +548,7 @@ public class TableForReport {
 //        report.计算首次被引时间("resources/result.xls");
 //        report.计算年均引用("resources/result.xls");
 //      其他几个表格数据计算可以明年再补充了
-//        report.统计各种评论数("resources/result.xls", "resources/process.xls");
-        report.统计各种被引情况("resources/result.xls", "resources/process.xls");
+//        report.统计各种评论数("resources/result.xls", "resources/result1.xls");
+        report.统计各种被引情况("resources/result.xls", "resources/result1.xls");
     }
 }

@@ -69,10 +69,10 @@ public class MainCNKI {
 
     //报纸评论
     public void newpaperCommentRun() throws Exception {
-        //报纸评论
         ExcelProcess reader = new ExcelProcess();
         CnkiSpider cnkiSpider = new CnkiSpider();
         String result;
+        String[][] details;
         SearchResult[] searchResults = reader.reader("resources/source-init.xls");
 
         for (int i = 0; i < searchResults.length; i++) {
@@ -96,9 +96,22 @@ public class MainCNKI {
 //                    }
 //                }
 //            }
-            result = cnkiSpider.getNewPaperComment(searchResults[i].getTitle());
-            System.out.println(searchResults[i].getTitle() + "   " + result + "   报纸评论——第" + (i + 1) + "部书的全title");
-            reader.writeCnkiComment(result, 30, i + 1);
+//            result = cnkiSpider.getNewPaperCommentDetail(searchResults[i].getTitle());
+//            System.out.println(searchResults[i].getTitle() + "   " + result + "   报纸评论——第" + (i + 1) + "部书的全title");
+//            reader.writeCnkiComment(result, 30, i + 1);
+
+            details = cnkiSpider.getNewPaperCommentDetail(searchResults[i].getTitle());
+            System.out.println(searchResults[i].getTitle()+"-----报纸评论");
+            if(details != null){
+                for (int j = 0; j < details.length; j++) {
+                    String[] detail = details[j];
+                    System.out.print(detail[0] + "  ");
+                    System.out.print(detail[1] + "  ");
+                    System.out.print(detail[2] + "  ");
+                    System.out.println(detail[3]);
+                }
+            }
+            reader.writeCnkiComment(details);
             Thread.sleep(2000);
         }
     }
@@ -142,7 +155,7 @@ public class MainCNKI {
     public static void main(String[] args) throws Exception {
         MainCNKI cnki = new MainCNKI();
 //        cnki.paperRun();
-//        cnki.newpaperCommentRun();
-        cnki.scholarCommentRun();
+        cnki.newpaperCommentRun();
+//        cnki.scholarCommentRun();
     }
 }
