@@ -11,9 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * Created by Administrator on 2016/9/19.
@@ -294,7 +293,8 @@ public class TableForReport {
 
         //这是立项时间的起止，这里2004应该是不变的了，截止时间现在是写死的
         int start = 2004;
-        int end = 2013;
+        //一般是当前年-2年，不一定
+        int end = new Date().getYear() - 2;
         for (int i = start; i <= end; i++) {
             Double doubanTotalCount = 0.0;
             Double doubanTotalScore = 0.0;
@@ -444,7 +444,7 @@ public class TableForReport {
             Double selfInstituteYearTotal = 0.0;
             Double yearTotal = 0.0;
             for (int j = 0; j < rows - 1; j++) {
-                if(magazines[j].equals("")){
+                if (magazines[j].equals("")) {
                     continue;
                 }
                 if (Integer.parseInt(projectTime[j]) == i) {
