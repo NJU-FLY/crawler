@@ -258,7 +258,6 @@ public class TableForReport {
         String[] amazonCount = new String[rows - 1];
         String[] amazonScore = new String[rows - 1];
         String[] scholarCount = new String[rows - 1];
-        String[] newspaperCount = new String[rows - 1];
 
         for (int i = 1; i < rows; i++) {
             projectTime[i - 1] = sheet.getCell(CellName.projectTime.getValue(), i).getContents();
@@ -268,7 +267,6 @@ public class TableForReport {
             amazonCount[i - 1] = sheet.getCell(CellName.amazonCommentCount.getValue(), i).getContents();
             amazonScore[i - 1] = sheet.getCell(CellName.amazonScore.getValue(), i).getContents();
             scholarCount[i - 1] = sheet.getCell(CellName.scholarCommentCount.getValue(), i).getContents();
-            newspaperCount[i - 1] = sheet.getCell(CellName.newspaperCommentCount.getValue(), i).getContents();
         }
         WritableWorkbook wwb = this.writeSheet(outputPath);
         WritableSheet ws = wwb.getSheet(0);
@@ -279,8 +277,7 @@ public class TableForReport {
         ws.addCell(new Label(4, 0, "当当得分"));
         ws.addCell(new Label(5, 0, "亚马逊评价数"));
         ws.addCell(new Label(6, 0, "亚马逊得分"));
-        ws.addCell(new Label(7, 0, "报纸评论数"));
-        ws.addCell(new Label(8, 0, "学术评论数"));
+        ws.addCell(new Label(7, 0, "学术评论数"));
 
         this.closeSheet(wwb);
 
@@ -288,18 +285,16 @@ public class TableForReport {
         Integer dangdangHasComment = 0;
         Integer amazonHasComment = 0;
         Integer scholarHasComment = 0;
-        Integer newspaperHasComment = 0;
         Double doubanAllYearCount = 0.0;
         Double doubanAllYearScore = 0.0;
         Double dangdangAllYearCount = 0.0;
         Double amazonAllYearCount = 0.0;
         Double amazonAllYearScore = 0.0;
         Double scholarAllYearCount = 0.0;
-        Double newspaperAllYearCount = 0.0;
 
         //这是立项时间的起止，这里2004应该是不变的了，截止时间现在是写死的
         int start = 2004;
-        int end = 2014;
+        int end = 2013;
         for (int i = start; i <= end; i++) {
             Double doubanTotalCount = 0.0;
             Double doubanTotalScore = 0.0;
@@ -307,12 +302,11 @@ public class TableForReport {
             Double amazonTotalCount = 0.0;
             Double amazonTotalScore = 0.0;
             Double scholarTotalCount = 0.0;
-            Double newspaperTotalCount = 0.0;
+            Double newspapeTotalCount = 0.0;
             Integer doubanHasCommentYear = 0;
             Integer dangdangHasCommentYear = 0;
             Integer amazonHasCommentYear = 0;
             Integer scholarHasCommentYear = 0;
-            Integer newspaperHasCommentYear = 0;
             for (int j = 0; j < rows - 1; j++) {
                 if (Integer.parseInt(projectTime[j]) == i) {
                     if (!doubanCount[j].equals("--")) {
@@ -337,10 +331,6 @@ public class TableForReport {
                         scholarTotalCount += Double.parseDouble(scholarCount[j]);
                         scholarHasCommentYear++;
                     }
-                    if (!newspaperCount[j].equals("0")) {
-                        newspaperTotalCount += Double.parseDouble(newspaperCount[j]);
-                        newspaperHasCommentYear++;
-                    }
                 }
             }
 
@@ -350,17 +340,11 @@ public class TableForReport {
             Double amazonAverageCount = amazonTotalCount / amazonHasCommentYear;
             Double amazonAverageScore = amazonTotalScore / amazonHasCommentYear;
             Double scholarAverageCount = scholarTotalCount / scholarHasCommentYear;
-            Double newspaperAverageCount;
-            if (newspaperHasCommentYear == 0.0) {
-                newspaperAverageCount = 0.0;
-            } else {
-                newspaperAverageCount = newspaperTotalCount / newspaperHasCommentYear;
-            }
+
             doubanHasComment += doubanHasCommentYear;
             dangdangHasComment += dangdangHasCommentYear;
             amazonHasComment += amazonHasCommentYear;
             scholarHasComment += scholarHasCommentYear;
-            newspaperHasComment += newspaperHasCommentYear;
 
             doubanAllYearCount += doubanTotalCount;
             doubanAllYearScore += doubanTotalScore;
@@ -368,7 +352,6 @@ public class TableForReport {
             amazonAllYearCount += amazonTotalCount;
             amazonAllYearScore += amazonTotalScore;
             scholarAllYearCount += scholarTotalCount;
-            newspaperAllYearCount += newspaperTotalCount;
 
             wwb = this.writeSheet(outputPath);
             ws = wwb.getSheet(0);
@@ -380,7 +363,6 @@ public class TableForReport {
             ws.addCell(new Number(5, i - start + 1, amazonAverageCount));
             ws.addCell(new Number(6, i - start + 1, amazonAverageScore));
             ws.addCell(new Number(7, i - start + 1, scholarAverageCount));
-            ws.addCell(new Number(8, i - start + 1, newspaperAverageCount));
             this.closeSheet(wwb);
         }
 
@@ -391,14 +373,12 @@ public class TableForReport {
         ws.addCell(new Number(3, end - start + 2, dangdangAllYearCount));
         ws.addCell(new Number(5, end - start + 2, amazonAllYearCount));
         ws.addCell(new Number(7, end - start + 2, scholarAllYearCount));
-        ws.addCell(new Number(8, end - start + 2, newspaperAllYearCount));
 
         ws.addCell(new Label(0, end - start + 3, "有评论图书个数"));
         ws.addCell(new Number(2, end - start + 3, doubanHasComment));
         ws.addCell(new Number(4, end - start + 3, dangdangHasComment));
         ws.addCell(new Number(6, end - start + 3, amazonHasComment));
         ws.addCell(new Number(7, end - start + 3, scholarHasComment));
-        ws.addCell(new Number(8, end - start + 3, newspaperHasComment));
 
         ws.addCell(new Label(0, end - start + 4, "平均值"));
         ws.addCell(new Number(1, end - start + 4, doubanAllYearCount / doubanHasComment));
@@ -408,7 +388,6 @@ public class TableForReport {
         ws.addCell(new Number(5, end - start + 4, amazonAllYearCount / amazonHasComment));
         ws.addCell(new Number(6, end - start + 4, amazonAllYearScore / amazonHasComment));
         ws.addCell(new Number(7, end - start + 4, scholarAllYearCount / scholarHasComment));
-        ws.addCell(new Number(8, end - start + 4, newspaperAllYearCount / newspaperHasComment));
 
         this.closeSheet(wwb);
     }
