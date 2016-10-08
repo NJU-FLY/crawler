@@ -399,7 +399,8 @@ public class CnkiSpider {
 //        cnkiResult.setSelfInstituteCitation(cnki.getSelfInstituteCitation(searchResult));
 //        System.out.println(cnkiResult);
 
-        String[][] details = cnki.getNewPaperCommentDetail(searchResult.getTitle());
+//        //cnki爬取报纸评论详情信息
+//        String[][] details = cnki.getNewPaperCommentDetail(searchResult.getTitle());
 
     }
 }

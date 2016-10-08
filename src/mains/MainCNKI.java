@@ -96,7 +96,7 @@ public class MainCNKI {
 //                    }
 //                }
 //            }
-//            result = cnkiSpider.getNewPaperCommentDetail(searchResults[i].getTitle());
+//            result = cnkiSpider.getNewPaperComment(searchResults[i].getTitle());
 //            System.out.println(searchResults[i].getTitle() + "   " + result + "   报纸评论——第" + (i + 1) + "部书的全title");
 //            reader.writeCnkiComment(result, 30, i + 1);
 
@@ -111,7 +111,7 @@ public class MainCNKI {
                     System.out.println(detail[3]);
                 }
             }
-            reader.writeCnkiComment(details);
+            reader.writeCnkiComment(searchResults[i].getTitle(), details);
             Thread.sleep(2000);
         }
     }

@@ -295,14 +295,14 @@ public class ExcelProcess {
         rwb.close();
     }
 
-    public void writeCnkiComment(String[][] details) throws Exception {
+    public void writeCnkiComment(String searchTitle, String[][] details) throws Exception {
         if(details == null){
             return;
         }
 
-        InputStream instream = new FileInputStream("resources/result.xls");
+        InputStream instream = new FileInputStream("resources/result1.xls");
         Workbook rwb = Workbook.getWorkbook(instream);
-        WritableWorkbook wwb = Workbook.createWorkbook(new File("resources/result.xls"), rwb);//copy
+        WritableWorkbook wwb = Workbook.createWorkbook(new File("resources/result1.xls"), rwb);//copy
         WritableSheet ws = wwb.getSheet(0);
         int row = ws.getRows();
         for (int i = 0; i < details.length; i++) {
@@ -311,10 +311,12 @@ public class ExcelProcess {
             Label author = new Label(1, row+i, detail[1]);
             Label institute = new Label(2, row+i, detail[2]);
             Label time = new Label(3, row+i, detail[3]);
+            Label book = new Label(4, row+i, searchTitle);
             ws.addCell(title);
             ws.addCell(institute);
             ws.addCell(author);
             ws.addCell(time);
+            ws.addCell(book);
         }
 
         wwb.write();
@@ -380,8 +382,8 @@ public class ExcelProcess {
      * @throws Exception
      */
     public void writeDangdangBookInfo(GTResult gtResult) throws Exception {
-        Workbook rwb = Workbook.getWorkbook(new File("F:\\资料\\result.xls"));
-        WritableWorkbook wwb = Workbook.createWorkbook(new File("F:\\资料\\result.xls"), rwb);//copy
+        Workbook rwb = Workbook.getWorkbook(new File("resource/result.xls"));
+        WritableWorkbook wwb = Workbook.createWorkbook(new File("resource/result.xls"), rwb);//copy
         WritableSheet ws = wwb.getSheet(0);
         int rows = ws.getRows();
         System.out.println("   行数：" + rows);
