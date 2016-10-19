@@ -11,14 +11,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrator on 2016/9/19.
  */
 public class TableForReport {
+
+    //这是立项时间的起止，这里2004应该是不变的了
+    int startLiXiang = 2004;
+
+    //一般是当前年-2年，不一定
+    int endLiXiang = new Date().getYear() - 2;
 
     /**
      * 写入立项时间数据，这个代码基本是不能用的
@@ -258,7 +262,6 @@ public class TableForReport {
         String[] amazonCount = new String[rows - 1];
         String[] amazonScore = new String[rows - 1];
         String[] scholarCount = new String[rows - 1];
-        String[] newspaperCount = new String[rows - 1];
 
         for (int i = 1; i < rows; i++) {
             projectTime[i - 1] = sheet.getCell(CellName.projectTime.getValue(), i).getContents();
@@ -268,7 +271,6 @@ public class TableForReport {
             amazonCount[i - 1] = sheet.getCell(CellName.amazonCommentCount.getValue(), i).getContents();
             amazonScore[i - 1] = sheet.getCell(CellName.amazonScore.getValue(), i).getContents();
             scholarCount[i - 1] = sheet.getCell(CellName.scholarCommentCount.getValue(), i).getContents();
-            newspaperCount[i - 1] = sheet.getCell(CellName.newspaperCommentCount.getValue(), i).getContents();
         }
         WritableWorkbook wwb = this.writeSheet(outputPath);
         WritableSheet ws = wwb.getSheet(0);
@@ -279,8 +281,7 @@ public class TableForReport {
         ws.addCell(new Label(4, 0, "当当得分"));
         ws.addCell(new Label(5, 0, "亚马逊评价数"));
         ws.addCell(new Label(6, 0, "亚马逊得分"));
-        ws.addCell(new Label(7, 0, "报纸评论数"));
-        ws.addCell(new Label(8, 0, "学术评论数"));
+        ws.addCell(new Label(7, 0, "学术评论数"));
 
         this.closeSheet(wwb);
 
@@ -288,31 +289,26 @@ public class TableForReport {
         Integer dangdangHasComment = 0;
         Integer amazonHasComment = 0;
         Integer scholarHasComment = 0;
-        Integer newspaperHasComment = 0;
         Double doubanAllYearCount = 0.0;
         Double doubanAllYearScore = 0.0;
         Double dangdangAllYearCount = 0.0;
         Double amazonAllYearCount = 0.0;
         Double amazonAllYearScore = 0.0;
         Double scholarAllYearCount = 0.0;
-        Double newspaperAllYearCount = 0.0;
 
-        //这是立项时间的起止，这里2004应该是不变的了，截止时间现在是写死的
-        int start = 2004;
-        int end = 2014;
-        for (int i = start; i <= end; i++) {
+
+        for (int i = startLiXiang; i <= endLiXiang; i++) {
             Double doubanTotalCount = 0.0;
             Double doubanTotalScore = 0.0;
             Double dangdangTotalCount = 0.0;
             Double amazonTotalCount = 0.0;
             Double amazonTotalScore = 0.0;
             Double scholarTotalCount = 0.0;
-            Double newspaperTotalCount = 0.0;
+            Double newspapeTotalCount = 0.0;
             Integer doubanHasCommentYear = 0;
             Integer dangdangHasCommentYear = 0;
             Integer amazonHasCommentYear = 0;
             Integer scholarHasCommentYear = 0;
-            Integer newspaperHasCommentYear = 0;
             for (int j = 0; j < rows - 1; j++) {
                 if (Integer.parseInt(projectTime[j]) == i) {
                     if (!doubanCount[j].equals("--")) {
@@ -337,10 +333,6 @@ public class TableForReport {
                         scholarTotalCount += Double.parseDouble(scholarCount[j]);
                         scholarHasCommentYear++;
                     }
-                    if (!newspaperCount[j].equals("0")) {
-                        newspaperTotalCount += Double.parseDouble(newspaperCount[j]);
-                        newspaperHasCommentYear++;
-                    }
                 }
             }
 
@@ -350,17 +342,11 @@ public class TableForReport {
             Double amazonAverageCount = amazonTotalCount / amazonHasCommentYear;
             Double amazonAverageScore = amazonTotalScore / amazonHasCommentYear;
             Double scholarAverageCount = scholarTotalCount / scholarHasCommentYear;
-            Double newspaperAverageCount;
-            if (newspaperHasCommentYear == 0.0) {
-                newspaperAverageCount = 0.0;
-            } else {
-                newspaperAverageCount = newspaperTotalCount / newspaperHasCommentYear;
-            }
+
             doubanHasComment += doubanHasCommentYear;
             dangdangHasComment += dangdangHasCommentYear;
             amazonHasComment += amazonHasCommentYear;
             scholarHasComment += scholarHasCommentYear;
-            newspaperHasComment += newspaperHasCommentYear;
 
             doubanAllYearCount += doubanTotalCount;
             doubanAllYearScore += doubanTotalScore;
@@ -368,47 +354,42 @@ public class TableForReport {
             amazonAllYearCount += amazonTotalCount;
             amazonAllYearScore += amazonTotalScore;
             scholarAllYearCount += scholarTotalCount;
-            newspaperAllYearCount += newspaperTotalCount;
 
             wwb = this.writeSheet(outputPath);
             ws = wwb.getSheet(0);
-            ws.addCell(new Number(0, i - start + 1, i));
-            ws.addCell(new Number(1, i - start + 1, doubanAverageCount));
-            ws.addCell(new Number(2, i - start + 1, doubanAverageScore));
-            ws.addCell(new Number(3, i - start + 1, dangdangAverageCount));
-            ws.addCell(new Number(4, i - start + 1, 5));
-            ws.addCell(new Number(5, i - start + 1, amazonAverageCount));
-            ws.addCell(new Number(6, i - start + 1, amazonAverageScore));
-            ws.addCell(new Number(7, i - start + 1, scholarAverageCount));
-            ws.addCell(new Number(8, i - start + 1, newspaperAverageCount));
+            ws.addCell(new Number(0, i - startLiXiang + 1, i));
+            ws.addCell(new Number(1, i - startLiXiang + 1, doubanAverageCount));
+            ws.addCell(new Number(2, i - startLiXiang + 1, doubanAverageScore));
+            ws.addCell(new Number(3, i - startLiXiang + 1, dangdangAverageCount));
+            ws.addCell(new Number(4, i - startLiXiang + 1, 5));
+            ws.addCell(new Number(5, i - startLiXiang + 1, amazonAverageCount));
+            ws.addCell(new Number(6, i - startLiXiang + 1, amazonAverageScore));
+            ws.addCell(new Number(7, i - startLiXiang + 1, scholarAverageCount));
             this.closeSheet(wwb);
         }
 
         wwb = this.writeSheet(outputPath);
         ws = wwb.getSheet(0);
-        ws.addCell(new Label(0, end - start + 2, "总评论数"));
-        ws.addCell(new Number(1, end - start + 2, doubanAllYearCount));
-        ws.addCell(new Number(3, end - start + 2, dangdangAllYearCount));
-        ws.addCell(new Number(5, end - start + 2, amazonAllYearCount));
-        ws.addCell(new Number(7, end - start + 2, scholarAllYearCount));
-        ws.addCell(new Number(8, end - start + 2, newspaperAllYearCount));
+        ws.addCell(new Label(0, endLiXiang - startLiXiang + 2, "总评论数"));
+        ws.addCell(new Number(1, endLiXiang - startLiXiang + 2, doubanAllYearCount));
+        ws.addCell(new Number(3, endLiXiang - startLiXiang + 2, dangdangAllYearCount));
+        ws.addCell(new Number(5, endLiXiang - startLiXiang + 2, amazonAllYearCount));
+        ws.addCell(new Number(7, endLiXiang - startLiXiang + 2, scholarAllYearCount));
 
-        ws.addCell(new Label(0, end - start + 3, "有评论图书个数"));
-        ws.addCell(new Number(2, end - start + 3, doubanHasComment));
-        ws.addCell(new Number(4, end - start + 3, dangdangHasComment));
-        ws.addCell(new Number(6, end - start + 3, amazonHasComment));
-        ws.addCell(new Number(7, end - start + 3, scholarHasComment));
-        ws.addCell(new Number(8, end - start + 3, newspaperHasComment));
+        ws.addCell(new Label(0, endLiXiang - startLiXiang + 3, "有评论图书个数"));
+        ws.addCell(new Number(2, endLiXiang - startLiXiang + 3, doubanHasComment));
+        ws.addCell(new Number(4, endLiXiang - startLiXiang + 3, dangdangHasComment));
+        ws.addCell(new Number(6, endLiXiang - startLiXiang + 3, amazonHasComment));
+        ws.addCell(new Number(7, endLiXiang - startLiXiang + 3, scholarHasComment));
 
-        ws.addCell(new Label(0, end - start + 4, "平均值"));
-        ws.addCell(new Number(1, end - start + 4, doubanAllYearCount / doubanHasComment));
-        ws.addCell(new Number(2, end - start + 4, doubanAllYearScore / doubanHasComment));
-        ws.addCell(new Number(3, end - start + 4, dangdangAllYearCount / dangdangHasComment));
-        ws.addCell(new Number(4, end - start + 4, 5));
-        ws.addCell(new Number(5, end - start + 4, amazonAllYearCount / amazonHasComment));
-        ws.addCell(new Number(6, end - start + 4, amazonAllYearScore / amazonHasComment));
-        ws.addCell(new Number(7, end - start + 4, scholarAllYearCount / scholarHasComment));
-        ws.addCell(new Number(8, end - start + 4, newspaperAllYearCount / newspaperHasComment));
+        ws.addCell(new Label(0, endLiXiang - startLiXiang + 4, "平均值"));
+        ws.addCell(new Number(1, endLiXiang - startLiXiang + 4, doubanAllYearCount / doubanHasComment));
+        ws.addCell(new Number(2, endLiXiang - startLiXiang + 4, doubanAllYearScore / doubanHasComment));
+        ws.addCell(new Number(3, endLiXiang - startLiXiang + 4, dangdangAllYearCount / dangdangHasComment));
+        ws.addCell(new Number(4, endLiXiang - startLiXiang + 4, 5));
+        ws.addCell(new Number(5, endLiXiang - startLiXiang + 4, amazonAllYearCount / amazonHasComment));
+        ws.addCell(new Number(6, endLiXiang - startLiXiang + 4, amazonAllYearScore / amazonHasComment));
+        ws.addCell(new Number(7, endLiXiang - startLiXiang + 4, scholarAllYearCount / scholarHasComment));
 
         this.closeSheet(wwb);
     }
@@ -446,18 +427,13 @@ public class TableForReport {
         ws.addCell(new Label(6, 0, "机构自引率"));
         this.closeSheet(wwb);
 
-
-        //这是立项时间的起止，这里2004应该是不变的了，截止时间现在是写死的
-        int start = 2004;
-        int end = 2014;
-
         Double degreeAllTotal = 0.0;
         Double magazineAllTotal = 0.0;
         Double conferenceAllTotal = 0.0;
         Double selfCitAllTotal = 0.0;
         Double selfInstituteAllTotal = 0.0;
         Double allTotal = 0.0;
-        for (int i = start; i <= end; i++) {
+        for (int i = startLiXiang; i <= endLiXiang; i++) {
             Double degreeYearTotal = 0.0;
             Double magazineYearTotal = 0.0;
             Double conferenceYearTotal = 0.0;
@@ -465,7 +441,7 @@ public class TableForReport {
             Double selfInstituteYearTotal = 0.0;
             Double yearTotal = 0.0;
             for (int j = 0; j < rows - 1; j++) {
-                if(magazines[j].equals("")){
+                if (magazines[j].equals("")) {
                     continue;
                 }
                 if (Integer.parseInt(projectTime[j]) == i) {
@@ -500,25 +476,25 @@ public class TableForReport {
 
             wwb = this.writeSheet(outputPath);
             ws = wwb.getSheet(0);
-            ws.addCell(new Number(0, i - start + 1, i));
-            ws.addCell(new Number(1, i - start + 1, yearTotal));
-            ws.addCell(new Number(2, i - start + 1, degreeYearTotal));
-            ws.addCell(new Number(3, i - start + 1, magazineYearTotal));
-            ws.addCell(new Number(4, i - start + 1, conferenceYearTotal));
-            ws.addCell(new Number(5, i - start + 1, selfCitYearTotal / yearTotal));
-            ws.addCell(new Number(6, i - start + 1, selfInstituteYearTotal / yearTotal));
+            ws.addCell(new Number(0, i - startLiXiang + 1, i));
+            ws.addCell(new Number(1, i - startLiXiang + 1, yearTotal));
+            ws.addCell(new Number(2, i - startLiXiang + 1, degreeYearTotal));
+            ws.addCell(new Number(3, i - startLiXiang + 1, magazineYearTotal));
+            ws.addCell(new Number(4, i - startLiXiang + 1, conferenceYearTotal));
+            ws.addCell(new Number(5, i - startLiXiang + 1, selfCitYearTotal / yearTotal));
+            ws.addCell(new Number(6, i - startLiXiang + 1, selfInstituteYearTotal / yearTotal));
             this.closeSheet(wwb);
         }
 
         wwb = this.writeSheet(outputPath);
         ws = wwb.getSheet(0);
-        ws.addCell(new Label(0, end - start + 2, "总计"));
-        ws.addCell(new Number(1, end - start + 2, allTotal));
-        ws.addCell(new Number(2, end - start + 2, degreeAllTotal));
-        ws.addCell(new Number(3, end - start + 2, magazineAllTotal));
-        ws.addCell(new Number(4, end - start + 2, conferenceAllTotal));
-        ws.addCell(new Number(5, end - start + 2, selfCitAllTotal / allTotal));
-        ws.addCell(new Number(6, end - start + 2, selfInstituteAllTotal / allTotal));
+        ws.addCell(new Label(0, endLiXiang - startLiXiang + 2, "总计"));
+        ws.addCell(new Number(1, endLiXiang - startLiXiang + 2, allTotal));
+        ws.addCell(new Number(2, endLiXiang - startLiXiang + 2, degreeAllTotal));
+        ws.addCell(new Number(3, endLiXiang - startLiXiang + 2, magazineAllTotal));
+        ws.addCell(new Number(4, endLiXiang - startLiXiang + 2, conferenceAllTotal));
+        ws.addCell(new Number(5, endLiXiang - startLiXiang + 2, selfCitAllTotal / allTotal));
+        ws.addCell(new Number(6, endLiXiang - startLiXiang + 2, selfInstituteAllTotal / allTotal));
         this.closeSheet(wwb);
 
     }
@@ -565,11 +541,10 @@ public class TableForReport {
 
     public static void main(String[] args) throws Exception {
         TableForReport report = new TableForReport();
-//        report.计算峰值间隔("resources/result.xls");
-//        report.计算首次被引时间("resources/result.xls");
-//        report.计算年均引用("resources/result.xls");
+        report.计算峰值间隔("resources/result.xls");
+        report.计算首次被引时间("resources/result.xls");
 //      其他几个表格数据计算可以明年再补充了
-//        report.统计各种评论数("resources/result.xls", "resources/process.xls");
-        report.统计各种被引情况("resources/result.xls", "resources/process.xls");
+        report.统计各种评论数("resources/result.xls", "resources/result1.xls");
+        report.统计各种被引情况("resources/result.xls", "resources/result1.xls");
     }
 }
