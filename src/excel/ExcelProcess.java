@@ -8,7 +8,6 @@ import jxl.write.Number;
 import pojo.CnkiResult;
 import pojo.GTResult;
 import pojo.SearchResult;
-import excel.CellName;
 
 import java.io.*;
 import java.util.HashMap;
@@ -298,48 +297,38 @@ public class ExcelProcess {
     /**
      * 国图图书信息写入
      *
-     * @param gtResult
+     * @param gtResults
      * @throws Exception
      */
-    public void writeNlc(GTResult gtResult) throws Exception {
-        Workbook rwb = Workbook.getWorkbook(new File("F:\\资料\\result.xls"));
-        WritableWorkbook wwb = Workbook.createWorkbook(new File("F:\\资料\\result.xls"), rwb);//copy
+    public void writeNlc(GTResult[] gtResults) throws Exception {
+        Workbook rwb = Workbook.getWorkbook(new File("resources/result.xls"));
+        WritableWorkbook wwb = Workbook.createWorkbook(new File("resources/result.xls"), rwb);//copy
         WritableSheet ws = wwb.getSheet(0);
         int rows = ws.getRows();
         System.out.println("   行数：" + rows);
-
-        if (gtResult == null) {
-            for (int i = 0; i < 12; i++) {
-                Label lab = new Label(i, rows, "--");
-                ws.addCell(lab);
+        for (int i = 0; i < rows; i++) {
+            if (gtResults[i] == null) {
+                for (int j = 0; j < 12; j++) {
+                    Label lab = new Label(j, rows, "--");
+                    ws.addCell(lab);
+                }
+            } else {
+                Label lab1 = new Label(CellName.bookType.getValue(), i, gtResults[i].getBooktype());
+                Label lab2 = new Label(CellName.allAuthor.getValue(), i, gtResults[i].getAllAuthor());
+                Label lab3 = new Label(CellName.isbn.getValue(), i, gtResults[i].getISBN());
+                Label lab4 = new Label(CellName.otherAuthor.getValue(), i, gtResults[i].getOtherAuthor());
+                Label lab5 = new Label(CellName.language.getValue(), i, gtResults[i].getLangguage());
+                Label lab6 = new Label(CellName.librarySort.getValue(), i, gtResults[i].getLibrarySort());
+                Label lab7 = new Label(CellName.pages.getValue(), i, gtResults[i].getPage());
+                ws.addCell(lab1);
+                ws.addCell(lab2);
+                ws.addCell(lab3);
+                ws.addCell(lab4);
+                ws.addCell(lab5);
+                ws.addCell(lab6);
+                ws.addCell(lab7);
             }
-        } else {
-            Label lab1 = new Label(0, rows, gtResult.getTitle());
-            Label lab2 = new Label(1, rows, gtResult.getBooktype());
-            Label lab3 = new Label(2, rows, gtResult.getMainAuthor());
-            Label lab4 = new Label(3, rows, gtResult.getPublisher());
-            Label lab5 = new Label(4, rows, gtResult.getPubTime());
-            Label lab6 = new Label(5, rows, gtResult.getAllAuthor());
-            Label lab7 = new Label(6, rows, gtResult.getISBN());
-            Label lab8 = new Label(7, rows, gtResult.getPublishPlace());
-            Label lab9 = new Label(8, rows, gtResult.getOtherAuthor());
-            Label lab10 = new Label(9, rows, gtResult.getLangguage());
-            Label lab11 = new Label(10, rows, gtResult.getSort());
-            Label lab12 = new Label(11, rows, gtResult.getPage());
-            Label lab13 = new Label(12, rows, gtResult.getAllTitle());
-            ws.addCell(lab1);
-            ws.addCell(lab2);
-            ws.addCell(lab3);
-            ws.addCell(lab4);
-            ws.addCell(lab5);
-            ws.addCell(lab6);
-            ws.addCell(lab7);
-            ws.addCell(lab8);
-            ws.addCell(lab9);
-            ws.addCell(lab10);
-            ws.addCell(lab11);
-            ws.addCell(lab12);
-            ws.addCell(lab13);
+
         }
         wwb.write();
         wwb.close();
@@ -370,7 +359,7 @@ public class ExcelProcess {
             Label lab5 = new Label(4, rows, gtResult.getPubTime());
             Label lab6 = new Label(5, rows, gtResult.getAllAuthor());
             Label lab7 = new Label(6, rows, gtResult.getISBN());
-            Label lab11 = new Label(10, rows, gtResult.getSort());
+            Label lab11 = new Label(10, rows, gtResult.getLibrarySort());
             Label lab12 = new Label(11, rows, gtResult.getPage());
             Label lab13 = new Label(12, rows, gtResult.getPrice());
             ws.addCell(lab1);

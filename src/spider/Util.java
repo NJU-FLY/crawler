@@ -82,7 +82,7 @@ public class Util {
 
     //查询结果书名格式化
     public String formatTitleString(String title){
-        while (title.indexOf(" ") != -1) {
+        while (title.contains(" ")) {
             title = title.substring(0, title.indexOf(" ")) + title.substring(title.indexOf(" ") + 1, title.length());
         }
         title = title.replace("“", "\"");

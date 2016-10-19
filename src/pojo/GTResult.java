@@ -15,9 +15,10 @@ public class GTResult {
     String publishPlace;
     String otherAuthor;
     String langguage;
-    String sort;
+    String librarySort;
     String page;
     String price;
+
 
     public String getPrice() {
         return price;
@@ -115,12 +116,12 @@ public class GTResult {
         this.langguage = langguage;
     }
 
-    public String getSort() {
-        return sort;
+    public String getLibrarySort() {
+        return librarySort;
     }
 
-    public void setSort(String sort) {
-        this.sort = sort;
+    public void setLibrarySort(String librarySort) {
+        this.librarySort = librarySort;
     }
 
     public String getPage() {

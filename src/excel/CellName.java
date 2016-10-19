@@ -39,10 +39,19 @@ public enum CellName {
     newspaperCommentCount(30),
     scholarCommentCount(31),
 
-
     年均引用(37),
     首次被引时间(39),
-    峰值间隔(41);
+    峰值间隔(41),
+
+    allAuthor(43),
+    isbn(44),
+    otherAuthor(46),
+    language(47),
+    librarySort(48),
+    pages(49),
+    price(50),
+    bookType(52);
+
 
     private int value;
 

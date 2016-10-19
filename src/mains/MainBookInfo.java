@@ -17,12 +17,12 @@ public class MainBookInfo {
         DangdangSpider dangdangSpider = new DangdangSpider();
         //拉取书目详情url，这个跟获取评价逻辑类似，之前的叫getPrams，返回一个字符串，已经删掉了
         String url = "";
-        for(int i=0;i<searchResults.length;i++) {
-            if(url != null && url != "") {
+        for (int i = 0; i < searchResults.length; i++) {
+            if (!url.equals("")) {
                 Thread.sleep(2000);
                 GTResult gtResult = dangdangSpider.getBookInfo(url);
                 reader.writeDangdangBookInfo(gtResult);
-            }else{
+            } else {
                 reader.writeDangdangBookInfo(null);
             }
             Thread.sleep(2000);
@@ -33,31 +33,31 @@ public class MainBookInfo {
     public void nlcBookInfo() throws Exception {
         ExcelProcess reader = new ExcelProcess();
         SearchResult[] searchResults = reader.reader("resources/source-init.xls");
-        GTResult gtResult = new GTResult();
+        GTResult[] gtResults = new GTResult[searchResults.length];
         NlcSpider nlcSpider = new NlcSpider();
-        SearchResult searchResult = new SearchResult();
-        searchResult.setTitle("大国崛起制高点");
-        searchResult.setPublisher("人民出版社");
-        searchResult.setAuthor("胡雪梅");
-        String url = "";
-        url = nlcSpider.getParams(searchResult);
-        for(int i=0;i<searchResults.length;i++) {
+        String url;
+        for (int i = 0; i < searchResults.length; i++) {
             url = nlcSpider.getParams(searchResults[i]);
-            if(url != null) {
-                gtResult = nlcSpider.getTable(url);
-                reader.writeNlc(gtResult);
-            }else{
-                reader.writeNlc(null);
+            gtResults[i] = new GTResult();
+            if (url != null) {
+                gtResults[i] = nlcSpider.getTable(url);
+            } else {
+                gtResults[i] = null;
             }
-
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         }
+        reader.writeNlc(gtResults);
+
+//        SearchResult searchResult = new SearchResult();
+//        searchResult.setTitle("大国崛起制高点");
+//        searchResult.setPublisher("人民出版社");
+//        searchResult.setAuthor("胡雪梅");
+//        url = nlcSpider.getParams(searchResult);
     }
 
     public static void main(String[] args) throws Exception {
         MainBookInfo bookInfo = new MainBookInfo();
-        ExcelProcess excelProcess = new ExcelProcess();
-//        bookInfo.nlcBookInfo();
-//        bookInfo.dangdangBookInfo();
+        bookInfo.nlcBookInfo();
+        bookInfo.dangdangBookInfo();
     }
 }

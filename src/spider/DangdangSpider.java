@@ -20,8 +20,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Administrator on 2015/9/5.
@@ -182,7 +180,7 @@ public class DangdangSpider {
             }
             if (h.toString().contains("所属分类")) {
                 System.out.print(h.text() + "   ");
-                gtResult.setSort(h.text());
+                gtResult.setLibrarySort(h.text());
             }
         }
         if (author.size() <= 0) {
