@@ -295,7 +295,7 @@ public class ExcelProcess {
     }
 
     public void writeCnkiComment(String searchTitle, String[][] details) throws Exception {
-        if(details == null){
+        if (details == null) {
             return;
         }
 
@@ -306,11 +306,11 @@ public class ExcelProcess {
         int row = ws.getRows();
         for (int i = 0; i < details.length; i++) {
             String[] detail = details[i];
-            Label title = new Label(0, row+i, detail[0]);
-            Label author = new Label(1, row+i, detail[1]);
-            Label institute = new Label(2, row+i, detail[2]);
-            Label time = new Label(3, row+i, detail[3]);
-            Label book = new Label(4, row+i, searchTitle);
+            Label title = new Label(0, row + i, detail[0]);
+            Label author = new Label(1, row + i, detail[1]);
+            Label institute = new Label(2, row + i, detail[2]);
+            Label time = new Label(3, row + i, detail[3]);
+            Label book = new Label(4, row + i, searchTitle);
             ws.addCell(title);
             ws.addCell(institute);
             ws.addCell(author);
@@ -367,43 +367,37 @@ public class ExcelProcess {
     /**
      * 当当图书信息写入
      *
-     * @param gtResult
+     * @param gtResults
      * @throws Exception
      */
-    public void writeDangdangBookInfo(GTResult gtResult) throws Exception {
-        Workbook rwb = Workbook.getWorkbook(new File("resource/result.xls"));
-        WritableWorkbook wwb = Workbook.createWorkbook(new File("resource/result.xls"), rwb);//copy
+    public void writeDangdangBookInfo(GTResult[] gtResults) throws Exception {
+        Workbook rwb = Workbook.getWorkbook(new File("resources/result.xls"));
+        WritableWorkbook wwb = Workbook.createWorkbook(new File("resources/result.xls"), rwb);//copy
         WritableSheet ws = wwb.getSheet(0);
         int rows = ws.getRows();
         System.out.println("   行数：" + rows);
-
-        if (gtResult == null) {
-            for (int i = 0; i < 13; i++) {
-                Label lab = new Label(i, rows, "--");
-                ws.addCell(lab);
+        for (int i = 1; i < rows; i++) {
+            if (gtResults[i - 1] == null) {
+                for (int j = 0; j < 13; j++) {
+                    Label lab = new Label(j, rows, "--");
+                    ws.addCell(lab);
+                }
+            } else {
+                Label lab1 = new Label(CellName.allAuthor.getValue(), i-1, gtResults[i - 1].getAllAuthor());
+                Label lab2 = new Label(CellName.isbn.getValue(), i-1, gtResults[i - 1].getISBN());
+                Label lab3 = new Label(CellName.librarySort.getValue(), i-1, gtResults[i - 1].getLibrarySort());
+                Label lab4 = new Label(CellName.pages.getValue(), i-1, gtResults[i - 1].getPage());
+                Label lab5 = new Label(CellName.price.getValue(), i-1, gtResults[i - 1].getPrice());
+                ws.addCell(lab1);
+                ws.addCell(lab2);
+                ws.addCell(lab3);
+                ws.addCell(lab4);
+                ws.addCell(lab5);
             }
-        } else {
-            Label lab1 = new Label(0, rows, gtResult.getTitle());
-            Label lab4 = new Label(3, rows, gtResult.getPublisher());
-            Label lab5 = new Label(4, rows, gtResult.getPubTime());
-            Label lab6 = new Label(5, rows, gtResult.getAllAuthor());
-            Label lab7 = new Label(6, rows, gtResult.getISBN());
-            Label lab11 = new Label(10, rows, gtResult.getLibrarySort());
-            Label lab12 = new Label(11, rows, gtResult.getPage());
-            Label lab13 = new Label(12, rows, gtResult.getPrice());
-            ws.addCell(lab1);
-            ws.addCell(lab4);
-            ws.addCell(lab5);
-            ws.addCell(lab6);
-            ws.addCell(lab7);
-            ws.addCell(lab11);
-            ws.addCell(lab12);
-            ws.addCell(lab13);
         }
+
         wwb.write();
         wwb.close();
         rwb.close();
     }
-
-
 }

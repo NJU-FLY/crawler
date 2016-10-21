@@ -15,18 +15,19 @@ public class MainBookInfo {
         ExcelProcess reader = new ExcelProcess();
         SearchResult[] searchResults = reader.reader("resources/source-init.xls");
         DangdangSpider dangdangSpider = new DangdangSpider();
-        //拉取书目详情url，这个跟获取评价逻辑类似，之前的叫getPrams，返回一个字符串，已经删掉了
+        GTResult[] gtResults = new GTResult[searchResults.length];
         String url = "";
         for (int i = 0; i < searchResults.length; i++) {
+            url = dangdangSpider.getBookInfoUrl(searchResults[i]);
             if (!url.equals("")) {
-                Thread.sleep(2000);
-                GTResult gtResult = dangdangSpider.getBookInfo(url);
-                reader.writeDangdangBookInfo(gtResult);
+                gtResults[i] = dangdangSpider.getBookInfo(url);
             } else {
-                reader.writeDangdangBookInfo(null);
+                gtResults[i] = null;
             }
             Thread.sleep(2000);
         }
+        reader.writeDangdangBookInfo(gtResults);
+
     }
 
     //国图的图书信息
@@ -57,7 +58,7 @@ public class MainBookInfo {
 
     public static void main(String[] args) throws Exception {
         MainBookInfo bookInfo = new MainBookInfo();
-        bookInfo.nlcBookInfo();
+//        bookInfo.nlcBookInfo();
         bookInfo.dangdangBookInfo();
     }
 }
